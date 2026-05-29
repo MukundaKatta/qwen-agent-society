@@ -1,0 +1,5 @@
+# The society core is pure standard library (zero runtime deps), so the offline
+# demo and tests run with nothing installed.
+#
+# Only the LIVE Qwen Cloud client needs the OpenAI SDK (DashScope-compatible).
+openai>=1.30

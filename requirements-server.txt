@@ -1,0 +1,5 @@
+# Deployable backend (server.py). Core is standard-library only; the HTTP backend adds:
+openai>=1.30
+fastapi>=0.110
+uvicorn>=0.29
+pydantic>=2.6
