@@ -37,7 +37,9 @@ def main() -> None:
     print(f"FINAL: {result.final}")
     print("=" * 68)
     print("\nNote: the critic gated the remediation until it named a concrete,")
-    print("reversible action; the society revised and converged, all on the blackboard.")
+    print(
+        "reversible action; the society revised and converged, all on the blackboard."
+    )
 
 
 if __name__ == "__main__":

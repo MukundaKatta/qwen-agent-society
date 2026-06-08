@@ -18,12 +18,20 @@ DEFAULT_MODEL = "qwen-plus"
 
 
 class QwenClient:
-    def __init__(self, model: str = DEFAULT_MODEL, api_key: str | None = None, base_url: str = DASHSCOPE_BASE_URL) -> None:
-        from openai import OpenAI  # optional dependency; only for live runs
-
+    def __init__(
+        self,
+        model: str = DEFAULT_MODEL,
+        api_key: str | None = None,
+        base_url: str = DASHSCOPE_BASE_URL,
+    ) -> None:
         key = api_key or os.environ.get("DASHSCOPE_API_KEY")
         if not key:
-            raise RuntimeError("set DASHSCOPE_API_KEY or pass api_key to use the live Qwen client")
+            raise RuntimeError(
+                "set DASHSCOPE_API_KEY or pass api_key to use the live Qwen client"
+            )
+
+        from openai import OpenAI  # optional dependency; only for live runs
+
         self.model = model
         self._client = OpenAI(api_key=key, base_url=base_url)
 
@@ -63,7 +71,11 @@ def demo_responder(spec: AgentSpec, content: str) -> str:
     if role == "communicate":
         return "Status: investigating checkout outage; mitigation in progress; next update in 15m"
     if role == "critic":
-        return "APPROVE" if "rollback" in content.lower() else "REVISE: remediation must name a concrete, reversible action"
+        return (
+            "APPROVE"
+            if "rollback" in content.lower()
+            else "REVISE: remediation must name a concrete, reversible action"
+        )
     if role == "synthesizer":
         return (
             "Incident plan: SEV-1 checkout outage caused by v2.4.0 OOM. "
@@ -74,7 +86,9 @@ def demo_responder(spec: AgentSpec, content: str) -> str:
 
 
 class FakeQwenClient:
-    def __init__(self, responder: Callable[[AgentSpec, str], str] | None = None) -> None:
+    def __init__(
+        self, responder: Callable[[AgentSpec, str], str] | None = None
+    ) -> None:
         self.responder = responder or demo_responder
 
     def complete(self, spec: AgentSpec, content: str) -> str:

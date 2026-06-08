@@ -35,10 +35,26 @@ SYNTHESIZER = AgentSpec(
     system_prompt="You are the Synthesizer. Combine the approved partial results into one concise final plan.",
 )
 
-TRIAGE = AgentSpec("triage", "assess severity and impact", "You assess incident severity and user impact. One or two lines.")
-DIAGNOSE = AgentSpec("diagnose", "find the root cause", "You find the root cause from symptoms and recent changes. One or two lines.")
-REMEDIATE = AgentSpec("remediate", "choose the fix", "You choose the smallest concrete, reversible remediation and name the exact action.")
-COMMUNICATE = AgentSpec("communicate", "draft a status update", "You draft a short stakeholder status update.")
+TRIAGE = AgentSpec(
+    "triage",
+    "assess severity and impact",
+    "You assess incident severity and user impact. One or two lines.",
+)
+DIAGNOSE = AgentSpec(
+    "diagnose",
+    "find the root cause",
+    "You find the root cause from symptoms and recent changes. One or two lines.",
+)
+REMEDIATE = AgentSpec(
+    "remediate",
+    "choose the fix",
+    "You choose the smallest concrete, reversible remediation and name the exact action.",
+)
+COMMUNICATE = AgentSpec(
+    "communicate",
+    "draft a status update",
+    "You draft a short stakeholder status update.",
+)
 
 _BUILTINS = (PLANNER, CRITIC, SYNTHESIZER, TRIAGE, DIAGNOSE, REMEDIATE, COMMUNICATE)
 

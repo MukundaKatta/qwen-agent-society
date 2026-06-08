@@ -56,7 +56,7 @@ the synthesizer produces the final plan. The whole transcript prints, grouped by
 round.
 
 ```bash
-python -m pytest -q     # 9 tests, no deps
+python -m pytest -q     # 14 tests, no deps
 ```
 
 ## Use it from code
@@ -93,7 +93,7 @@ qwen_society/
   qwen_client.py  # live Qwen Cloud client + offline role-aware fake
   society.py      # coordinator: plan -> dispatch -> critique -> synthesize
 examples/offline_demo.py   # credential-free; shows the critic revision loop
-tests/                     # 9 tests (blackboard + society), zero deps
+tests/                     # 14 tests (blackboard + society + client/parsing), zero deps
 docs/                      # architecture + Alibaba Cloud deploy guide
 server.py                  # FastAPI backend
 ```
