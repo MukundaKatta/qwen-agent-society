@@ -56,7 +56,7 @@ the synthesizer produces the final plan. The whole transcript prints, grouped by
 round.
 
 ```bash
-python -m pytest -q     # 9 tests, no deps
+python -m unittest discover -s tests    # 29 tests, standard library only
 ```
 
 ## Use it from code
@@ -77,6 +77,47 @@ Pass your own `roster={name: AgentSpec}` to define a different society;
 `QwenClient` reads `DASHSCOPE_API_KEY` and calls Qwen through the DashScope
 OpenAI-compatible endpoint.
 
+### Running fully offline
+
+Swap the live client for `FakeQwenClient`, a deterministic, role-aware responder
+that drives the complete collaboration (including the critic revision loop) with
+no API key and no network:
+
+```python
+from qwen_society import Society, FakeQwenClient
+
+result = Society(FakeQwenClient(), max_rounds=3).run("checkout 500s")
+print(result.final)
+```
+
+You can also supply your own `responder(spec, content) -> str` to script any
+behavior: `FakeQwenClient(my_responder)`.
+
+## API reference
+
+The public surface is re-exported from the top-level `qwen_society` package.
+
+| Symbol | Kind | Purpose |
+| --- | --- | --- |
+| `Society(client, roster=None, max_rounds=2)` | class | Coordinator. `run(task) -> SocietyResult` plans, dispatches, runs the critic loop, then synthesizes. |
+| `QwenClient(model="qwen-plus", api_key=None, base_url=...)` | class | Live client. `complete(spec, content) -> str` via the DashScope OpenAI-compatible endpoint. Needs `openai` and `DASHSCOPE_API_KEY`. |
+| `FakeQwenClient(responder=None)` | class | Offline client with the same `complete(spec, content)` interface; defaults to `demo_responder`. |
+| `demo_responder(spec, content) -> str` | function | Deterministic stand-in that makes the critic reject a vague fix once, then approve the revision. |
+| `parse_subtasks(plan) -> list[Subtask]` | function | Parse the planner's `role: subtask` lines; blank lines and lines without a task are skipped. |
+| `default_roster() -> dict[str, AgentSpec]` | function | The built-in incident-response society. |
+| `generic_specialist(role) -> AgentSpec` | function | Fallback spec for roles the planner invents that aren't in the roster. |
+| `Blackboard()` | class | Append-only shared log: `post`, `all`, `by_kind`, `latest_partials`, `transcript`. |
+| `AgentSpec`, `Subtask`, `Message`, `SocietyResult` | dataclasses | Typed primitives; `Message` and `SocietyResult` expose `to_dict()`. |
+| `MessageKind`, `Verdict` | enums | Closed sets of message kinds and critic verdicts. |
+| `PLANNER`, `CRITIC`, `SYNTHESIZER` | `AgentSpec` | The coordinator roles used by `Society`. |
+
+A client is anything with a `complete(spec: AgentSpec, content: str) -> str`
+method, so you can plug in any backend without subclassing.
+
+`SocietyResult` fields: `task`, `final` (synthesized answer), `rounds` (critic
+rounds run), `approved` (whether the critic approved before `max_rounds`), and
+`transcript` (the full blackboard as a list of dicts).
+
 ## Running on Qwen Cloud + Alibaba Cloud
 
 `server.py` exposes `POST /solve`. Deploy guide is in
@@ -93,7 +134,7 @@ qwen_society/
   qwen_client.py  # live Qwen Cloud client + offline role-aware fake
   society.py      # coordinator: plan -> dispatch -> critique -> synthesize
 examples/offline_demo.py   # credential-free; shows the critic revision loop
-tests/                     # 9 tests (blackboard + society), zero deps
+tests/                     # 29 stdlib unittest tests (types + blackboard + society), zero deps
 docs/                      # architecture + Alibaba Cloud deploy guide
 server.py                  # FastAPI backend
 ```
